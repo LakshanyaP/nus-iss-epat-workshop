@@ -38,3 +38,15 @@ jobs:
         uses: snyk/actions/maven@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Option A: Send a combined notification stating passed or failed
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        if: always()
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Repository: ${{ github.repository }}
+            Snyk Scan Result: ${{ steps.snyk_scan.outcome == 'success' && '🟢 PASSED' || '🔴 FAILED' }}
+            Check the run details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
